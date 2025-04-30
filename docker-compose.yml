@@ -1,0 +1,17 @@
+# docker-compose.yml
+version: "3.8"
+services:
+  postgres:
+    image: postgres:15
+    container_name: access-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: access_control
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
