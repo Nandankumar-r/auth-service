@@ -1,5 +1,6 @@
 package com.nandan.auth.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -19,15 +20,21 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String username;
+    @JsonIgnore
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role; // ADMIN, VIEWER, EDITOR
     private Boolean active;
+
+    @Override
+    public String toString() {
+        return "User(username=" + username + ", role=" + role + ")";
+    }
+
 }

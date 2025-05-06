@@ -44,7 +44,6 @@ public class RateLimitFilter implements Filter {
                 HttpServletResponse res = (HttpServletResponse) response;
                 res.setStatus(429);
                 res.getWriter().write("Too many requests. Please try again later.");
-                return;
             }
         } else {
             chain.doFilter(request, response);

@@ -25,3 +25,8 @@ logging:
     org:
       springframework:
         security=DEBUG:
+
+# @TODO: Move secret to spring cloud and refresh the secret while doing it.
+jwt:
+  secret: ThisIsASuperSecretKeyThatShouldBeStoredSafely
+  expiration: 86400000 # 1 day in milliseconds
