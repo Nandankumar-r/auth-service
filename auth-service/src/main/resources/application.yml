@@ -6,7 +6,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -17,8 +17,11 @@ server:
 springdoc:
   api-docs:
     path: /api-docs
+    enabled: true
   swagger-ui:
     path: /swagger-ui.html
+    enabled: true
+  packages-to-scan: com.nandan.auth.controller
 
 logging:
   level:

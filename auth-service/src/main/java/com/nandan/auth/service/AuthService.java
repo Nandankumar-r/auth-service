@@ -6,25 +6,31 @@ import com.nandan.auth.entity.Role;
 import com.nandan.auth.entity.User;
 import com.nandan.auth.exception.InvalidRoleException;
 import com.nandan.auth.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import com.nandan.auth.strategy.AuthStrategy;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
+    private final AuthStrategy authStrategy;
+
+    public AuthService(
+            UserRepository userRepository,
+            BCryptPasswordEncoder passwordEncoder,
+            @Qualifier("jwtAuthStrategy") AuthStrategy authStrategy
+    ) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authStrategy = authStrategy;
+    }
 
     public String register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -49,23 +55,10 @@ public class AuthService {
 
     public ResponseEntity<?> login(LoginRequest request) {
         try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.getUsername(), request.getPassword()
-                    )
-            );
+            String token = authStrategy.authenticateAndIssueToken(request.getUsername(), request.getPassword());
+            return ResponseEntity.ok(Map.of("accessToken", token));
         } catch (BadCredentialsException ex) {
-            throw new BadCredentialsException("Invalid credentials"); // Already handled globally
+            throw new BadCredentialsException("Invalid credentials");
         }
-
-        // Generate JWT
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-
-        String token = jwtService.generateToken(user);
-
-        return ResponseEntity.ok(Map.of("accessToken", token));
     }
-
 }

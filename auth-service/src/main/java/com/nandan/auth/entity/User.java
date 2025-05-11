@@ -29,7 +29,7 @@ public class User {
     @JsonIgnore
     private String password;
     @Enumerated(EnumType.STRING)
-    private Role role; // ADMIN, VIEWER, EDITOR
+    private Role role; // ADMIN, USER
     private Boolean active;
 
     @Override
